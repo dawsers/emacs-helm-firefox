@@ -1,0 +1,55 @@
+* helm-firefox.el
+
+** Introduction
+
+=helm-firefox.el= is a package that provides an Emacs helm interface for Firefox
+bookmarks and history. It can be downloaded [[https://github.com/dawsers/emacs-helm-firefox.git][here]].
+
+
+** Requirements
+
+You have first to install [[https://github.com/emacs-helm/helm][helm]] in order to make this work.
+
+The package also needs [[https://sqlite.org/index.html][=sqlite3=]] installed and in your path to be able to access
+the database containing bookmarks and history.
+
+
+** Custom Variables
+
+*** =helm-firefox-default-database=
+
+This variable tries to guess where the Firefox database =places.sqlite= is, but
+the guess is not very elaborated. It may work OK on Linux systems, but for any
+other OS, it is probably better to set it manually.
+
+
+** Configuration
+
+If you make a symbolic link from =helm-firefox.el= to
+=~/.emacs.d/lisp/helm-firefox.el= the following can be used as an example
+configuration.
+
+#+begin_src emacs-lisp
+(use-package helm-firefox
+  :load-path "~/.emacs.d/lisp"
+  :bind
+  ("C-c F h" . helm-firefox-history)
+  ("C-c F b" . helm-firefox-bookmarks))
+#+end_src
+
+
+** How to Use
+
+*** =M-x helm-firefox-bookmarks=
+
+Uses helm to show a list of your Firefox bookmarks. The default action is to
+open the bookmark in the default browser. There is also a secondary action to
+copy the bookmark URL to the kill ring.
+
+*** =M-x helm-firefox-history=
+
+Uses helm to show a list of your Firefox history. The default action is to
+open the URL in the default browser. There is also a secondary action to
+copy the URL to the kill ring.
+
+If your history is very big, generation of the buffer may take a few seconds.
