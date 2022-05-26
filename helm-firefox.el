@@ -38,7 +38,10 @@
   "SELECT c.title AS Parent, a.title AS Title, b.url AS URL, DATETIME(a.dateAdded/1000000,'unixepoch') AS DateAdded FROM moz_bookmarks AS a JOIN moz_places AS b ON a.fk = b.id, moz_bookmarks AS c WHERE a.parent = c.id")
 
 (defvar helm-firefox--history-sql-query
-  "SELECT b.title AS Title, b.url AS URL, DATETIME(a.visit_date/1000000,'unixepoch') AS DateAdded FROM moz_historyvisits AS a JOIN moz_places AS b ON b.id = a.place_id")
+  "SELECT b.title AS Title, b.url AS URL, DATETIME(a.visit_date/1000000,'unixepoch') AS DateAdded FROM moz_historyvisits AS a JOIN moz_places AS b ON b.id = a.place_id ORDER BY DateAdded DESC")
+
+(defvar helm-firefox--search-sql-query
+  "SELECT title AS Title, description AS Description, url AS URL, DATETIME(last_visit_date/1000000,'unixepoch') AS LastDate FROM moz_places ORDER BY LastDate DESC")
 
 (defun helm-firefox--transform-bookmarks-sql-result ()
   "Parse the output from `sqlite3' in ascii mode."
@@ -60,6 +63,17 @@
     (mapcar (pcase-lambda (`(,title ,url ,date))
               (let ((date-str (format "%s" date)))
                 (cons (concat (propertize date-str 'face 'bold) ": " title " = " url) url)))
+            result)))
+
+(defun helm-firefox--transform-search-sql-result ()
+  "Parse the output from `sqlite3' in ascii mode."
+  (goto-char (point-min))
+  (let (result)
+    (while (re-search-forward (rx (group (+? any)) (eval (kbd "C-^"))) nil t)
+      (push (split-string (match-string 1) (kbd "C-_")) result))
+    (mapcar (pcase-lambda (`(,title ,description ,url ,date))
+              (let ((date-str (format "%s" date)))
+                (cons (concat (propertize date-str 'face 'bold) ": " title "/" description " = " url) url)))
             result)))
 
 (defun helm-firefox--make-sources (name sql-query transformer)
@@ -103,6 +117,16 @@
                   "Firefox History"
                   helm-firefox--history-sql-query
                   'helm-firefox--transform-history-sql-result)
+        :buffer "*Helm Firefox*"))
+
+;;;###autoload
+(defun helm-firefox-search ()
+  "Preconfigured `helm' for Firefox places."
+  (interactive)
+  (helm :sources (helm-firefox--make-sources
+                  "Firefox Places"
+                  helm-firefox--search-sql-query
+                  'helm-firefox--transform-search-sql-result)
         :buffer "*Helm Firefox*"))
 
 (provide 'helm-firefox)
