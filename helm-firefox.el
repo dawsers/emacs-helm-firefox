@@ -34,6 +34,22 @@
   :group 'helm-firefox
   :type 'string)
 
+(defface helm-firefox-date
+  '((t :inherit font-lock-constant-face))
+  "Face used for the entry's date.")
+
+(defface helm-firefox-folder
+  '((t :inherit font-lock-keyword-face))
+  "Face used for the entry's bookmark folder.")
+
+(defface helm-firefox-title
+  '((t :inherit font-lock-function-name-face))
+  "Face used for the entry's title.")
+
+(defface helm-firefox-url
+  '((t :inherit font-lock-comment-face))
+  "Face used for the entry's URL.")
+
 (defvar helm-firefox--bookmarks-sql-query
   "SELECT c.title AS Parent, a.title AS Title, b.url AS URL, DATETIME(a.dateAdded/1000000,'unixepoch') AS DateAdded FROM moz_bookmarks AS a JOIN moz_places AS b ON a.fk = b.id, moz_bookmarks AS c WHERE a.parent = c.id")
 
@@ -50,8 +66,16 @@
     (while (re-search-forward (rx (group (+? any)) (eval (kbd "C-^"))) nil t)
       (push (split-string (match-string 1) (kbd "C-_")) result))
     (mapcar (pcase-lambda (`(,parent ,title ,url ,date))
-              (let ((date-str (format "%s" date)))
-                (cons (concat (propertize date-str 'face 'bold) ": " parent "/" title " = " url) url)))
+                (cons
+                     (concat (propertize (truncate-string-to-width (format "%s" date) 11 0 ?\s) 'face 'helm-firefox-date)
+                             " "
+                             (propertize (truncate-string-to-width parent 16 0 ?\s) 'face helm-firefox-folder)
+                             " "
+                             (propertize (truncate-string-to-width title 70 0 ?\s) 'face helm-firefox-title)
+                             " "
+                             (propertize url 'face helm-firefox-url))
+                     url)
+                )
             result)))
 
 (defun helm-firefox--transform-history-sql-result ()
@@ -61,9 +85,16 @@
     (while (re-search-forward (rx (group (+? any)) (eval (kbd "C-^"))) nil t)
       (push (split-string (match-string 1) (kbd "C-_")) result))
     (mapcar (pcase-lambda (`(,title ,url ,date))
-              (let ((date-str (format "%s" date)))
-                (cons (concat (propertize date-str 'face 'bold) ": " title " = " url) url)))
+                (cons
+                     (concat (propertize (truncate-string-to-width (format "%s" date) 20 0 ?\s) 'face 'helm-firefox-date)
+                             " "
+                             (propertize (truncate-string-to-width title 70 0 ?\s) 'face helm-firefox-title)
+                             " "
+                             (propertize url 'face helm-firefox-url))
+                     url)
+                )
             result)))
+
 
 (defun helm-firefox--transform-search-sql-result ()
   "Parse the output from `sqlite3' in ascii mode."
@@ -72,8 +103,14 @@
     (while (re-search-forward (rx (group (+? any)) (eval (kbd "C-^"))) nil t)
       (push (split-string (match-string 1) (kbd "C-_")) result))
     (mapcar (pcase-lambda (`(,title ,description ,url ,date))
-              (let ((date-str (format "%s" date)))
-                (cons (concat (propertize date-str 'face 'bold) ": " title "/" description " = " url) url)))
+                (cons
+                     (concat (propertize (truncate-string-to-width (format "%s" date) 11 0 ?\s) 'face 'helm-firefox-date)
+                             " "
+                             (propertize (truncate-string-to-width (concat title " " description) 120 0 ?\s) 'face helm-firefox-title)
+                             " "
+                             (propertize url 'face helm-firefox-url))
+                     url)
+                )
             result)))
 
 (defun helm-firefox--make-sources (name sql-query transformer)
