@@ -33,8 +33,25 @@ configuration.
 (use-package helm-firefox
   :load-path "~/.emacs.d/lisp"
   :bind
+  ("C-c F f" . helm-firefox-search)
   ("C-c F h" . helm-firefox-history)
   ("C-c F b" . helm-firefox-bookmarks))
+#+end_src
+
+If you use [[https://github.com/radian-software/straight.el][straight.el]]:
+
+#+begin_src emacs-lisp
+(use-package helm-firefox
+  :straight (helm-firefox
+             :host github
+             :repo "dawsers/emacs-helm-firefox"
+  )
+  :after helm
+  :bind
+  ("C-c F f" . helm-firefox-search)
+  ("C-c F h" . helm-firefox-history)
+  ("C-c F b" . helm-firefox-bookmarks)
+)
 #+end_src
 
 
@@ -53,3 +70,12 @@ open the URL in the default browser. There is also a secondary action to
 copy the URL to the kill ring.
 
 If your history is very big, generation of the buffer may take a few seconds.
+
+*** =M-x helm-firefox-search=
+
+Uses helm to show a list of all the unique places in your Firefox database.
+The default action is to open the URL in the default browser. There is also a
+secondary action to copy the URL to the kill ring.
+
+If your database is very big, generation of the buffer may take a few seconds.
+
