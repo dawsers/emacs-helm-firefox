@@ -69,9 +69,9 @@
                 (cons
                      (concat (propertize (truncate-string-to-width (format "%s" date) 11 0 ?\s) 'face 'helm-firefox-date)
                              " "
-                             (propertize (truncate-string-to-width parent 16 0 ?\s) 'face helm-firefox-folder)
+                             (propertize (truncate-string-to-width parent 16 0 ?\s) 'face 'helm-firefox-folder)
                              " "
-                             (propertize (truncate-string-to-width title 70 0 ?\s) 'face helm-firefox-title)
+                             (propertize (truncate-string-to-width title 70 0 ?\s) 'face 'helm-firefox-title)
                              " "
                              (propertize url 'face helm-firefox-url))
                      url)
@@ -88,9 +88,9 @@
                 (cons
                      (concat (propertize (truncate-string-to-width (format "%s" date) 20 0 ?\s) 'face 'helm-firefox-date)
                              " "
-                             (propertize (truncate-string-to-width title 70 0 ?\s) 'face helm-firefox-title)
+                             (propertize (truncate-string-to-width title 70 0 ?\s) 'face 'helm-firefox-title)
                              " "
-                             (propertize url 'face helm-firefox-url))
+                             (propertize url 'face 'helm-firefox-url))
                      url)
                 )
             result)))
@@ -106,9 +106,9 @@
                 (cons
                      (concat (propertize (truncate-string-to-width (format "%s" date) 11 0 ?\s) 'face 'helm-firefox-date)
                              " "
-                             (propertize (truncate-string-to-width (concat title " " description) 120 0 ?\s) 'face helm-firefox-title)
+                             (propertize (truncate-string-to-width (concat title " " description) 120 0 ?\s) 'face 'helm-firefox-title)
                              " "
-                             (propertize url 'face helm-firefox-url))
+                             (propertize url 'face 'helm-firefox-url))
                      url)
                 )
             result)))
